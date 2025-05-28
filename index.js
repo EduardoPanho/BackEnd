@@ -1,18 +1,20 @@
 const express = require('express');
 const cors = require('cors');
+const admin = require('firebase-admin');
+const path = require('path');
+const serviceAccount = require('./serviceAccountKey.json');
 
-const routerProjetos = require('./routes/projetos');
-const routerFormacao = require('./routes/formacao');
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 
 const app = express();
-const port = 3000;
-
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/projetos', routerProjetos);
-app.use('/api/formacao', routerFormacao);
+const routerFormacao = require('./routers/formacao.js');
+app.use('/formacao', routerFormacao);
 
-app.listen(port, () => {
-    console.log(`Servidor rodando em http://localhost:${port}`);
+app.listen(3000, () => {
+  console.log('Servidor rodando na porta 3000');
 });

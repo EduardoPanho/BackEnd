@@ -1,3 +1,6 @@
+const express = require('express');
+const router = express.Router();
+
 const bd_cards_projetos = [
     { titulo: "Safe Haven", preco: "15/03/2025", imagem: "./../assets/Project_Img_1.png" },
     { titulo: "Bandeiras", preco: "29/02/2025", imagem: "./../assets/Project_Bandeiras_Img_2.jpg" },
@@ -9,59 +12,66 @@ const bd_cards_projetos = [
     { titulo: "Aspirador de Pó Philco 1600W", preco: "R$ 299,00" },
 ];
 
-module.exports = bd_cards_projetos;
+const admin = require('firebase-admin');
 
-const express = require('express');
-const router = express.Router();
+router.get('/', async (req, res) => {
+    try {
+        const snapshot = await admin.firestore().collection('projetos').get();
+        const projetos = snapshot.docs.map(doc => ({
+            ...doc.data(),
+            uid: doc.id
+        }));
 
-const bd_cards_projetos = require('./caminho_para_pasta/bd_cards_projetos');
+        return res.json(projetos);
 
-router.get('/', (req, res) => {
-    res.json(bd_cards_projetos);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Erro ao buscar projetos" });
+    }
 });
 
 router.post('/', (req, res) => {
     try {
         const { dados } = req.body;
         bd_cards_projetos.push(dados);
-        res.json({ resposta: "projeto adicionado com sucesso" });
+        return res.json({ resposta: "projeto adicionado com sucesso" });
     } catch (e) {
-        console.log(e);
-        res.status(500).json({ resposta: "erro no servidor" });
+        console.error(e);
+        return res.status(500).json({ resposta: "erro no servidor" });
     }
 });
 
 router.put('/', (req, res) => {
     try {
-        const { nome, linguagem, img } = req.body;
-        const index = bd_cards_projetos.findIndex(p => p.nome === nome);
+        const { titulo, preco, imagem } = req.body;
+        const index = bd_cards_projetos.findIndex(p => p.titulo === titulo);
 
         if (index !== -1) {
-            bd_cards_projetos[index] = { nome, linguagem, img };
-            res.json({ resposta: "projeto atualizado com sucesso" });
+            bd_cards_projetos[index] = { titulo, preco, imagem };
+            return res.json({ resposta: "projeto atualizado com sucesso" });
         } else {
-            res.status(404).json({ resposta: "projeto não encontrado" });
+            return res.status(404).json({ resposta: "projeto não encontrado" });
         }
     } catch (e) {
-        console.log(e);
-        res.status(500).json({ resposta: "erro no servidor" });
+        console.error(e);
+        return res.status(500).json({ resposta: "erro no servidor" });
     }
 });
 
 router.delete('/', (req, res) => {
     try {
-        const { nome } = req.body;
-        const index = bd_cards_projetos.findIndex(p => p.nome === nome);
+        const { titulo } = req.body;
+        const index = bd_cards_projetos.findIndex(p => p.titulo === titulo);
 
         if (index === -1) {
             return res.status(404).json({ resposta: "projeto não encontrado" });
         }
 
         bd_cards_projetos.splice(index, 1);
-        res.json({ resposta: "projeto deletado com sucesso" });
+        return res.json({ resposta: "projeto deletado com sucesso" });
     } catch (e) {
-        console.log(e);
-        res.status(500).json({ resposta: "erro no servidor" });
+        console.error(e);
+        return res.status(500).json({ resposta: "erro no servidor" });
     }
 });
 
