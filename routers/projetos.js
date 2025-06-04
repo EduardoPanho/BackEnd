@@ -37,12 +37,11 @@ res.status(500).send(err.message);
 });
 
 router.delete('/:id', async (req, res) => {
-    try {
-        await admin.firestore().collection('projetos').doc(req.params.id).delete();
-        res.send({ message: 'Deletao com secesso' })
-    } catch (err) {
-res.status(500).send(err.message);
-    }
+  try {
+    await admin.firestore().collection('projetos').doc(req.params.id).delete();
+    res.send({ message: 'Deletado com sucesso' });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
-
 module.exports = router;
