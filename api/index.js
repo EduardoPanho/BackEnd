@@ -15,18 +15,16 @@ const serviceAccount = {
   client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40bdportfolio-83f5f.iam.gserviceaccount.com",
   universe_domain: "googleapis.com"
 }
-
-
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
 const db = admin.firestore();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
 // const routerFormacao = require('./routers/formacao');
 // const routerProjetos = require('./routers/projetos');
 
