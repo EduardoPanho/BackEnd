@@ -22,7 +22,6 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
-const projetosCollection = db.collection('projetos');
 
 const app = express();
 // const routerFormacao = require('./routers/formacao');
@@ -40,7 +39,7 @@ app.use(express.json());
 
 app.get('/', async (req, res) => {
   try {
-    const snapshot = await admin.firestore().collection('projetos').get();
+    const snapshot = await db.collection('projetos').get();
     const projetos = snapshot.docs.map(doc => ({
       ...doc.data(),
       uid: doc.id
@@ -56,7 +55,7 @@ app.get('/', async (req, res) => {
 
 app.post('/', async (req, res) => {
   try {
-    const docRef = await admin.firestore().collection('projetos').add(req.body);
+    const docRef = await db.collection('projetos').add(req.body);
     res.status(201).send({ id: docRef.id });
   } catch (err) {
     res.status(500).send(err.message)
@@ -65,7 +64,7 @@ app.post('/', async (req, res) => {
 
 app.put('/:id', async (req, res) => {
   try {
-    await admin.firestore().collection('projetos').doc(req.params.id).update(req.body);
+    await db.collection('projetos').doc(req.params.id).update(req.body);
     res.send({ message: 'Atualizado com secesso' })
   } catch (err) {
     res.status(500).send(err.message);
@@ -74,11 +73,11 @@ app.put('/:id', async (req, res) => {
 
 app.delete('/:id', async (req, res) => {
   try {
-    await admin.firestore().collection('projetos').doc(req.params.id).delete();
+    await db.collection('projetos').doc(req.params.id).delete();
     res.send({ message: 'Deletado com sucesso' });
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
 
-module.export = app;
+module.exports = app;
