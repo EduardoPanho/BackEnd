@@ -16,7 +16,6 @@ const serviceAccount = {
   universe_domain: "googleapis.com"
 }
 
-
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
